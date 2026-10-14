@@ -1,0 +1,48 @@
+name: Day3 Backend Check
+on: push
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: accessevent
+        ports:
+          - 5432:5432
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+      - name: Check files exist
+        run: |
+          for f in app.py config.py models.py requirements.txt; do
+            [ -f "$f" ] && echo "PASS: $f found" || echo "FAIL: $f not found"
+          done
+      - name: Check models
+        run: |
+          grep -q "class User" models.py && echo "PASS: User model" || echo "FAIL: User model"
+          grep -q "class Event" models.py && echo "PASS: Event model" || echo "FAIL: Event model"
+          grep -q "class Registration" models.py && echo "PASS: Registration model" || echo "FAIL: Registration model"
+      - name: Check routes
+        run: |
+          grep -q "register" routes/auth.py && echo "PASS: auth routes" || echo "FAIL: auth routes"
+          grep -q "events" routes/events.py && echo "PASS: events routes" || echo "FAIL: events routes"
+      - name: Check JWT and security
+        run: |
+          grep -q "token_required" utils/auth_helpers.py && echo "PASS: JWT" || echo "FAIL: JWT"
+          grep -q "hash_password" utils/auth_helpers.py && echo "PASS: hashing" || echo "FAIL: hashing"
+      - name: Check inclusive fields
+        run: |
+          grep -q "is_inclusive" models.py && echo "PASS: inclusive flag" || echo "FAIL: inclusive flag"
+          grep -q "sign_language" models.py && echo "PASS: sign_language" || echo "FAIL: sign_language"
+      - name: Check accessibility
+        run: |
+          grep -q "accessibility" utils/accessibility.py && echo "PASS: accessibility" || echo "FAIL: accessibility"
