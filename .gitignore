@@ -9,3 +9,4 @@ login.json
 *.bak
 *.bak2
 .DS_Store
+main
