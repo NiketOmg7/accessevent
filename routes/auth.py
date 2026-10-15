@@ -7,17 +7,26 @@ auth_bp = Blueprint('auth', __name__)
 
 @auth_bp.route('/register', methods=['POST'])
 def register():
-    data = request.get_json()
-    if not data or not data.get('username') or not data.get('email') or not data.get('password'):
+    data = request.get_json() or {}
+    username = (data.get('username') or '').strip()
+    email = (data.get('email') or '').strip().lower()
+    password = data.get('password') or ''
+
+    if not username or not email or not password:
         return jsonify({'error': 'Заполните все поля'}), 400
 
-    if User.query.filter_by(email=data['email']).first():
+    # BUG-02 fix: проверка формата email
+    if '@' not in email or '.' not in email.split('@')[-1]:
+        return jsonify({'error': 'Некорректный email'}), 400
+
+    # BUG-01 fix: явная проверка дубликата → 409
+    if User.query.filter_by(email=email).first():
         return jsonify({'error': 'Email уже зарегистрирован'}), 409
 
     user = User(
-        username=data['username'],
-        email=data['email'],
-        password_hash=hash_password(data['password']),
+        username=username,
+        email=email,
+        password_hash=hash_password(password),
         role=data.get('role', 'participant'),
         accessibility_needs=data.get('accessibility_needs', '')
     )
@@ -29,12 +38,15 @@ def register():
 
 @auth_bp.route('/login', methods=['POST'])
 def login():
-    data = request.get_json()
-    if not data or not data.get('email') or not data.get('password'):
+    data = request.get_json() or {}
+    email = (data.get('email') or '').strip().lower()
+    password = data.get('password') or ''
+
+    if not email or not password:
         return jsonify({'error': 'Введите email и пароль'}), 400
 
-    user = User.query.filter_by(email=data['email']).first()
-    if not user or not verify_password(data['password'], user.password_hash):
+    user = User.query.filter_by(email=email).first()
+    if not user or not verify_password(password, user.password_hash):
         return jsonify({'error': 'Неверный email или пароль'}), 401
 
     token = generate_token(user.id, user.role)
