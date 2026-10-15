@@ -6,3 +6,6 @@ __pycache__/
 flask.log
 reg.json
 login.json
+*.bak
+*.bak2
+.DS_Store

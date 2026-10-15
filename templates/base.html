@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AccessEvent — платформа инклюзивных мероприятий с сурдопереводом и визуальными оповещениями">
+    <title>{% block title %}AccessEvent{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Перейти к содержимому</a>
+
+    <header role="banner">
+        <nav aria-label="Главное меню" class="main-nav">
+            <a href="{{ url_for('index_page') }}" class="nav-logo">
+                <span aria-hidden="true">♿</span> AccessEvent
+            </a>
+            <div class="nav-links">
+                <a href="{{ url_for('index_page') }}" class="nav-link">Главная</a>
+                <a href="{{ url_for('events_page') }}" class="nav-link">Мероприятия</a>
+                <a href="{{ url_for('login_page') }}" class="nav-link">Вход</a>
+                <a href="{{ url_for('register_page') }}" class="nav-link">Регистрация</a>
+            </div>
+            <button id="theme-toggle"
+                    class="theme-toggle"
+                    type="button"
+                    aria-label="Переключить тёмную тему"
+                    title="Переключить тему">
+                <span class="theme-icon-light" aria-hidden="true">☀️</span>
+                <span class="theme-icon-dark" aria-hidden="true">🌙</span>
+            </button>
+        </nav>
+    </header>
+
+    <main role="main" id="main-content">
+        <div aria-live="polite" id="notifications" class="notifications"></div>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer role="contentinfo">
+        <p>AccessEvent — платформа инклюзивных мероприятий</p>
+        <p><small>Визуальные уведомления вместо звуковых — для всех пользователей</small></p>
+    </footer>
+
+    <button id="back-to-top"
+            class="back-to-top"
+            type="button"
+            aria-label="Наверх"
+            title="Наверх">↑</button>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>
