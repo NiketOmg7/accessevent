@@ -1,0 +1,51 @@
+name: Day4 Frontend Check
+on: push
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check templates
+        run: |
+          for f in base.html index.html events.html login.html register.html profile.html; do
+            test -f "templates/$f" && echo "PASS: $f" || echo "FAIL: $f missing"
+          done
+
+      - name: Check static
+        run: |
+          test -f static/css/style.css && echo "PASS: style.css" || echo "FAIL: style.css"
+          test -f static/js/main.js && echo "PASS: main.js" || echo "FAIL: main.js"
+          echo "style.css bytes: $(wc -c < static/css/style.css)"
+          echo "main.js bytes: $(wc -c < static/js/main.js)"
+
+      - name: Check media queries
+        run: grep -q "@media" static/css/style.css && echo "PASS: media" || echo "FAIL: media"
+
+      - name: Check showNotification
+        run: grep -q "showNotification" static/js/main.js && echo "PASS: notification" || echo "FAIL: notification"
+
+      - name: Check ARIA
+        run: |
+          grep -l "aria-label" templates/*.html && echo "PASS: aria-label" || echo "FAIL: no aria-label"
+          grep -l "role=" templates/*.html && echo "PASS: role" || echo "FAIL: no role"
+
+      - name: Check Dockerfile
+        run: |
+          grep -q "^FROM" Dockerfile && echo "PASS: FROM" || echo "FAIL: FROM"
+          grep -q "^COPY" Dockerfile && echo "PASS: COPY" || echo "FAIL: COPY"
+          grep -q "^CMD" Dockerfile && echo "PASS: CMD" || echo "FAIL: CMD"
+
+      - name: Check docker-compose
+        run: |
+          grep -q "services" docker-compose.yml && echo "PASS: services" || echo "FAIL: services"
+          grep -q "postgres" docker-compose.yml && echo "PASS: postgres" || echo "FAIL: postgres"
+
+      - name: Check .dockerignore
+        run: test -f .dockerignore && echo "PASS: .dockerignore" || echo "FAIL: no .dockerignore"
+
+      - name: Syntax check
+        run: python -m py_compile app.py
+
+      - run: echo "PASS: Day4 check completed"
