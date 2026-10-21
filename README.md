@@ -57,7 +57,7 @@ accessevent/
 - `docs/test_cases.md` — тест-кейсы
 - `docs/bug_reports.md` — баг-репорты (3 шт.)
 - `docs/user_manual.md` — руководство пользователя
-- `docs/admin_manual.md` — руководство администратора
+- `docs/admin_manual.md` — руководство администратора   
 - `docs/api.md` — описание API
 - `docs/assessment.md` — SWOT-анализ и направления модернизации
 

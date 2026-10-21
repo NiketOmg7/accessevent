@@ -10,3 +10,4 @@ login.json
 *.bak2
 .DS_Store
 main
+~$*.pptx
