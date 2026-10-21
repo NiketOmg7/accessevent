@@ -1,32 +1,120 @@
 {% extends "base.html" %}
 
-{% block title %}Профиль — AccessEvent{% endblock %}
-
 {% block content %}
-<div class="profile-container">
-    <h1>Профиль пользователя</h1>
+<div style="max-width: 800px; margin: 0 auto;">
+    
+    <!-- Карточка профиля с аватаркой -->
+    <div class="card" style="padding: 30px; margin-bottom: 30px;">
+        <div style="display: flex; gap: 25px; align-items: center;">
+            <div style="width: 100px; height: 100px; border-radius: 50%; background: var(--bg-color); border: 3px solid var(--primary); display: flex; align-items: center; justify-content: center; font-size: 3rem; overflow: hidden; flex-shrink: 0;">
+                {% if user.avatar %}
+                    {% if user.avatar.startswith('/static') %}
+                        <img src="{{ user.avatar }}" alt="Аватар" style="width: 100%; height: 100%; object-fit: cover;">
+                    {% else %}
+                        {{ user.avatar }}
+                    {% endif %}
+                {% else %}
+                    {{ user.username[0] | upper }}
+                {% endif %}
+            </div>
+            <div>
+                <h2 style="margin: 0; font-size: 1.8rem;">{{ user.username }}</h2>
+                <p style="color: var(--text-muted); margin: 5px 0;">{{ user.email }}</p>
+                <span style="display: inline-block; padding: 4px 12px; border-radius: 12px; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; background: #e0f2fe; color: #0369a1;">
+                    {{ user.role }}
+                </span>
+            </div>
+        </div>
 
-    <div class="profile-card">
-        <p><strong>Имя:</strong> {{ user.username }}</p>
-        <p><strong>Email:</strong> {{ user.email }}</p>
-        <p><strong>Роль:</strong>
-           <span class="badge badge-role">{{ user.role }}</span>
-        </p>
-        {% if user.accessibility_needs %}
-        <p><strong>Особые потребности:</strong> {{ user.accessibility_needs }}</p>
+        <!-- Форма смены аватарки -->
+        <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--nav-border);">
+            
+        <!-- Форма смены никнейма -->
+        <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--nav-border);">
+            <h4 style="margin-top: 0; margin-bottom: 10px;">Сменить никнейм</h4>
+            <form action="/profile/{{ user.id }}/update_username" method="POST" style="display: flex; gap: 10px; align-items: center;">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="text" name="username" value="{{ user.username }}" placeholder="Новый никнейм" style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--nav-border); background: var(--bg-color); color: var(--text-main);">
+                <button type="submit" class="btn btn-primary" style="padding: 10px 20px; border-radius: 8px; font-weight: 500;">Сохранить</button>
+            </form>
+        </div>
+    
+        <h4 style="margin-top: 0; margin-bottom: 15px;">Сменить аватарку</h4>
+            <form action="/profile/{{ user.id }}/avatar" method="POST" enctype="multipart/form-data" style="display: flex; flex-wrap: wrap; gap: 15px; align-items: center;">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                
+                <!-- Загрузка файла -->
+                <div style="flex: 1; min-width: 200px;">
+                    <label style="display: block; font-size: 0.9rem; color: var(--text-muted); margin-bottom: 5px;">Загрузить файл:</label>
+                    <input type="file" name="avatar_file" accept="image/*" style="width: 100%; font-size: 0.9rem;">
+                </div>
+
+                <!-- Выбор эмодзи -->
+                <div style="flex: 1; min-width: 200px;">
+                    <label style="display: block; font-size: 0.9rem; color: var(--text-muted); margin-bottom: 5px;">Или выбрать эмоцию:</label>
+                    <select name="avatar_emoji" style="width: 100%; padding: 10px; border-radius: 8px;">
+                        <option value="">-- Выберите --</option>
+                        <option value="😊">😊 Улыбка</option>
+                        <option value="😎">😎 Крутой</option>
+                        <option value="🤟">🤟 Жест</option>
+                        <option value="♿">♿ Доступность</option>
+                        <option value="🌟">🌟 Звезда</option>
+                        <option value="🎧">🎧 Меломан</option>
+                        <option value="🚀">🚀 Космос</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="padding: 10px 20px; border-radius: 8px; font-weight: 500; margin-top: 20px;">Сохранить</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Блок "Мои созданные мероприятия" (только для организаторов) -->
+    {% if user.role == 'organizer' %}
+    <div style="margin-bottom: 30px;">
+        <h3 style="margin-bottom: 15px;">📌 Мои созданные мероприятия</h3>
+        {% set created_events = user.events %}
+        {% if created_events %}
+            <div style="display: flex; flex-direction: column; gap: 15px;">
+                {% for event in created_events %}
+                    <div class="card" style="padding: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+                        <div>
+                            <h4 style="margin: 0 0 5px 0;">{{ event.title }}</h4>
+                            <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0;">📅 {{ event.event_date.strftime('%d.%m.%Y %H:%M') }} | 📍 {{ event.location }}</p>
+                        </div>
+                        <form action="/events/{{ event.id }}/delete" method="POST" onsubmit="return confirm('Удалить мероприятие?');">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" style="background-color: #ef4444; color: white; padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: 500;">Удалить</button>
+                        </form>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p style="color: var(--text-muted);">Вы пока не создали ни одного мероприятия.</p>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Блок "Мои регистрации" -->
+    <div>
+        <h3 style="margin-bottom: 15px;">🎟 Мои регистрации</h3>
+        {% if registrations %}
+            <div style="display: flex; flex-direction: column; gap: 15px;">
+                {% for reg in registrations %}
+                    <div class="card" style="padding: 20px; border-left: 4px solid #10b981;">
+                        <h4 style="margin: 0 0 5px 0;">{{ reg.event.title }}</h4>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0 0 5px 0;">📅 {{ reg.event.event_date.strftime('%d.%m.%Y %H:%M') }} | 📍 {{ reg.event.location }}</p>
+                        <p style="font-size: 0.85rem; color: #10b981; margin: 0;">✅ Вы записаны</p>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="card" style="padding: 40px; text-align: center;">
+                <p style="color: var(--text-muted); margin-bottom: 15px;">Вы пока не записаны ни на одно мероприятие.</p>
+                <a href="/events" class="btn btn-primary" style="padding: 10px 20px; border-radius: 8px; text-decoration: none;">Найти мероприятия</a>
+            </div>
         {% endif %}
     </div>
 
-    <h2>Мои регистрации</h2>
-    <ul class="registrations-list">
-        {% for reg in registrations %}
-        <li>
-            Мероприятие #{{ reg.event_id }} —
-            запрошено: {{ reg.accessibility_request or '—' }}
-        </li>
-        {% else %}
-        <li>Вы пока не зарегистрированы ни на одно мероприятие.</li>
-        {% endfor %}
-    </ul>
 </div>
 {% endblock %}

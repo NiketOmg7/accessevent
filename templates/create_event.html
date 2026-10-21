@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="display: flex; justify-content: center;">
+    <div class="card" style="width: 100%; max-width: 600px; padding: 40px;">
+        <h2 style="margin-bottom: 30px; font-size: 1.8rem;">Создание мероприятия</h2>
+
+        <form action="/events/create" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 500;">Название мероприятия</label>
+                <input type="text" name="title" required placeholder="Например: Инклюзивный концерт" style="width: 100%; padding: 12px; border-radius: 8px;">
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 500;">Описание</label>
+                <textarea name="description" required placeholder="Расскажите о мероприятии..." rows="4" style="width: 100%; padding: 12px; border-radius: 8px; resize: vertical;"></textarea>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 500;">Дата и время</label>
+                <input type="datetime-local" name="event_date" required style="width: 100%; padding: 12px; border-radius: 8px;">
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 500;">Место проведения</label>
+                <input type="text" name="location" required placeholder="Адрес или название площадки" style="width: 100%; padding: 12px; border-radius: 8px;">
+            </div>
+
+            <div style="background: var(--bg-color); padding: 20px; border-radius: 12px; border: 1px solid var(--nav-border); margin-bottom: 30px;">
+                <label style="display: block; margin-bottom: 15px; font-weight: 600;">Доступная среда</label>
+                
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                        <input type="checkbox" name="is_inclusive" style="width: 18px; height: 18px; accent-color: var(--primary);"> Мероприятие инклюзивное
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                        <input type="checkbox" name="sign_language" style="width: 18px; height: 18px; accent-color: var(--primary);"> Будет сурдоперевод
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                        <input type="checkbox" name="visual_alerts" style="width: 18px; height: 18px; accent-color: var(--primary);"> Визуальные оповещения
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                        <input type="checkbox" name="wheelchair_accessible" style="width: 18px; height: 18px; accent-color: var(--primary);"> Доступно для колясочников
+                    </label>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 14px; border-radius: 8px; font-size: 1.1rem;">Опубликовать</button>
+        </form>
+        
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="/events" style="color: var(--text-muted); text-decoration: none;">← Вернуться к списку</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

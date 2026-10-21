@@ -1,57 +1,389 @@
 <!DOCTYPE html>
-<html lang="ru" data-theme="light">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="AccessEvent — платформа инклюзивных мероприятий с сурдопереводом и визуальными оповещениями">
-    <title>{% block title %}AccessEvent{% endblock %}</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <title>AccessEvent — Инклюзивные мероприятия</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Переменные для светлой темы */
+        :root {
+            --bg-color: #f8fafc;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --card-bg: #ffffff;
+            --nav-bg: rgba(255, 255, 255, 0.9);
+            --nav-border: #e2e8f0;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+        }
+
+        /* Переменные для темной темы */
+        [data-theme="dark"] {
+            --bg-color: #0f172a;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --card-bg: #1e293b;
+            --nav-bg: rgba(15, 23, 42, 0.9);
+            --nav-border: #334155;
+            --primary: #60a5fa;
+            --primary-hover: #3b82f6;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.4);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.5);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            transition: background-color 0.3s, color 0.3s;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.6;
+        }
+
+        /* Навигация (стеклянный эффект) */
+        nav {
+            background-color: var(--nav-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--nav-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 0 40px;
+            height: 70px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        .logo {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-main);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .logo span { color: var(--primary); }
+
+        .nav-links { display: flex; align-items: center; gap: 25px; }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+        .nav-links a:hover { color: var(--primary); }
+
+        .btn-nav {
+            background-color: var(--primary);
+            color: white !important;
+            padding: 8px 18px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+        .btn-nav:hover { background-color: var(--primary-hover); transform: translateY(-1px); }
+
+        .theme-toggle {
+            background: transparent;
+            border: 1px solid var(--nav-border);
+            color: var(--text-main);
+            font-size: 1.1rem;
+            cursor: pointer;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .theme-toggle:hover { background: var(--nav-border); }
+
+        /* Основной контент */
+        main { flex: 1; padding: 40px 20px; }
+
+        /* Карточки */
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--nav-border);
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.2s, box-shadow 0.2s, background-color 0.3s, border-color 0.3s;
+            border-radius: 16px;
+        }
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* Поля ввода */
+        input, textarea, select {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color) !important;
+            color: var(--text-main) !important;
+            border: 1px solid var(--nav-border) !important;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary) !important;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2) !important;
+        }
+
+        /* Кнопки */
+        .btn {
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            transition: all 0.2s;
+            cursor: pointer;
+            border: none;
+        }
+        .btn:hover { transform: translateY(-1px); }
+        .btn-primary { background-color: var(--primary); color: white; }
+        .btn-primary:hover { background-color: var(--primary-hover); }
+        .btn-success { background-color: #10b981; color: white; }
+        .btn-success:hover { background-color: #059669; }
+        .btn-danger { background-color: #ef4444; color: white; }
+        .btn-danger:hover { background-color: #dc2626; }
+
+        /* Подвал */
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--nav-border);
+            background-color: var(--card-bg);
+        }
+    
+    /* iOS-пружинистые анимации */
+    .btn, .card, .btn-nav, a, button {
+        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .btn:active, .btn-nav:active, button:active {
+        transform: scale(0.95);
+    }
+    .card:hover {
+        transform: translateY(-5px) scale(1.01);
+    }
+    .card:active {
+        transform: scale(0.98);
+    }
+    /* Плавное появление страниц */
+    main {
+        animation: fadeIn 0.5s ease-out;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+</style>
 </head>
 <body>
-    <a href="#main-content" class="skip-link">Перейти к содержимому</a>
 
-    <header role="banner">
-        <nav aria-label="Главное меню" class="main-nav">
-            <a href="{{ url_for('index_page') }}" class="nav-logo">
-                <span aria-hidden="true">♿</span> AccessEvent
-            </a>
-            <div class="nav-links">
-                <a href="{{ url_for('index_page') }}" class="nav-link">Главная</a>
-                <a href="{{ url_for('events_page') }}" class="nav-link">Мероприятия</a>
-                <a href="{{ url_for('login_page') }}" class="nav-link">Вход</a>
-                <a href="{{ url_for('register_page') }}" class="nav-link">Регистрация</a>
-            </div>
-            <button id="theme-toggle"
-                    class="theme-toggle"
-                    type="button"
-                    aria-label="Переключить тёмную тему"
-                    title="Переключить тему">
-                <span class="theme-icon-light" aria-hidden="true">☀️</span>
-                <span class="theme-icon-dark" aria-hidden="true">🌙</span>
-            </button>
-        </nav>
-    </header>
+    <nav>
+        <a href="/" class="logo">♿ Access<span>Event</span></a>
+        <div class="nav-links">
+            <a href="/">Главная</a>
+            <a href="/events">Мероприятия</a>
+            {% if session.get('user_id') %}
+                <a href="/profile/{{ session['user_id'] }}" style="display: flex; align-items: center; gap: 8px; background: var(--bg-color); padding: 6px 14px; border-radius: 20px; border: 1px solid var(--nav-border);">
+                    <span>👤 Мой профиль</span>
+                </a>
+                <a href="/logout" style="color: #ef4444; font-weight: 600;">Выйти</a>
+            {% else %}
+                <a href="/login">Вход</a>
+                <a href="/register" class="btn-nav">Регистрация</a>
+            {% endif %}
+            <button class="theme-toggle" id="theme-toggle" title="Переключить тему">🌙</button>
+        </div>
+    </nav>
 
-    <main role="main" id="main-content">
-        <div aria-live="polite" id="notifications" class="notifications"></div>
+    <main>
         {% block content %}{% endblock %}
     </main>
 
-    <footer role="contentinfo">
-        <p>AccessEvent — платформа инклюзивных мероприятий</p>
-        <p><small>Визуальные уведомления вместо звуковых — для всех пользователей</small></p>
+    <footer style="margin-top: auto; padding: 40px 20px; background-color: var(--card-bg); border-top: 1px solid var(--nav-border);">
+        <div style="max-width: 1000px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 20px;">
+            <div>
+                <div style="font-size: 1.2rem; font-weight: 700; color: var(--text-main); margin-bottom: 5px;">♿ AccessEvent</div>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0;">Платформа инклюзивных мероприятий</p>
+            </div>
+            <div style="text-align: right;">
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0;">Визуальные уведомления вместо звуковых — для всех пользователей.</p>
+                <p style="color: var(--text-muted); font-size: 0.8rem; margin: 5px 0 0 0;">© 2026 AccessEvent. Все права защищены.</p>
+            </div>
+        </div>
     </footer>
 
-    <button id="back-to-top"
-            class="back-to-top"
-            type="button"
-            aria-label="Наверх"
-            title="Наверх">↑</button>
+    <script>
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const currentTheme = localStorage.getItem('theme') || 'light';
 
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-    {% block scripts %}{% endblock %}
+        if (currentTheme === 'dark') {
+            document.body.setAttribute('data-theme', 'dark');
+            themeToggleBtn.textContent = '☀️';
+        }
+
+        themeToggleBtn.addEventListener('click', () => {
+            if (document.body.getAttribute('data-theme') === 'dark') {
+                document.body.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'light');
+                themeToggleBtn.textContent = '🌙';
+            } else {
+                document.body.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+                themeToggleBtn.textContent = '☀️';
+            }
+        });
+    </script>
+
+    <!-- Чат-виджет -->
+    <div id="chat-widget" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; font-family: Inter, sans-serif;">
+        <div id="chat-window" style="display: none; width: 320px; height: 450px; background: var(--card-bg); border: 1px solid var(--nav-border); border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); flex-direction: column; margin-bottom: 15px; overflow: hidden;">
+            <div style="background: var(--primary); color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center;">
+                <div style="font-weight: 600;">🤖 ИИ-Помощник</div>
+                <button id="close-chat" style="background: none; border: none; color: white; font-size: 1.2rem; cursor: pointer;">✖</button>
+            </div>
+            <div id="chat-messages" style="flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;">
+                <div style="background: var(--bg-color); padding: 10px; border-radius: 10px; align-self: flex-start; max-width: 80%;">
+                    Привет! Я ИИ-помощник AccessEvent. Спросите меня, как создать мероприятие или записаться на него.
+                </div>
+            </div>
+            <form id="chat-form" style="display: flex; border-top: 1px solid var(--nav-border);">
+                <input type="text" id="chat-input" placeholder="Ваш вопрос..." style="flex: 1; border: none; padding: 12px; outline: none; background: transparent; color: var(--text-main);" autocomplete="off">
+                <button type="submit" style="background: var(--primary); color: white; border: none; padding: 0 20px; cursor: pointer;">➤</button>
+            </form>
+        </div>
+        <button id="chat-toggle" style="background: var(--primary); color: white; border: none; width: 60px; height: 60px; border-radius: 50%; font-size: 1.5rem; cursor: pointer; box-shadow: 0 4px 12px rgba(59,130,246,0.4); display: flex; align-items: center; justify-content: center; transition: transform 0.2s;">💬</button>
+    </div>
+
+    <script>
+        const chatToggle = document.getElementById('chat-toggle');
+        const chatWindow = document.getElementById('chat-window');
+        const closeChat = document.getElementById('close-chat');
+        const chatForm = document.getElementById('chat-form');
+        const chatInput = document.getElementById('chat-input');
+        const chatMessages = document.getElementById('chat-messages');
+
+        chatToggle.addEventListener('click', () => {
+            if (chatWindow.style.display === 'none' || chatWindow.style.display === '') {
+                chatWindow.style.display = 'flex';
+                chatToggle.style.display = 'none';
+            }
+        });
+
+        closeChat.addEventListener('click', () => {
+            chatWindow.style.display = 'none';
+            chatToggle.style.display = 'flex';
+        });
+
+        chatForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const message = chatInput.value.trim();
+            if (!message) return;
+
+            const userMsgDiv = document.createElement('div');
+            userMsgDiv.style.cssText = 'background: var(--primary); color: white; padding: 10px; border-radius: 10px; align-self: flex-end; max-width: 80%;';
+            userMsgDiv.textContent = message;
+            chatMessages.appendChild(userMsgDiv);
+            chatInput.value = '';
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({message: message})
+                });
+                const data = await response.json();
+                
+                const botMsgDiv = document.createElement('div');
+                botMsgDiv.style.cssText = 'background: var(--bg-color); padding: 10px; border-radius: 10px; align-self: flex-start; max-width: 80%;';
+                botMsgDiv.textContent = data.reply;
+                chatMessages.appendChild(botMsgDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            } catch (err) {
+                console.error(err);
+            }
+        });
+    </script>
+    
+
+    <!-- Глобальный чат -->
+    <div id="global-chat-widget" style="position: fixed; bottom: 90px; right: 20px; z-index: 9998; font-family: Inter, sans-serif;">
+        <div id="global-chat-window" style="display: none; width: 340px; height: 480px; background: var(--card-bg); border: 1px solid var(--nav-border); border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); flex-direction: column; margin-bottom: 15px; overflow: hidden;">
+            <div style="background: #8b5cf6; color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center;">
+                <div style="font-weight: 600;">🌍 Общий чат</div>
+                <button id="close-global-chat" style="background: none; border: none; color: white; font-size: 1.2rem; cursor: pointer;">✖</button>
+            </div>
+            <div id="global-chat-messages" style="flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; background: var(--bg-color);">
+                <div style="text-align: center; color: var(--text-muted); font-size: 0.8rem;">Добро пожаловать в общий чат!</div>
+            </div>
+            <form id="global-chat-form" style="display: flex; border-top: 1px solid var(--nav-border); background: var(--card-bg);">
+                <input type="text" id="global-chat-input" placeholder="Написать сообщение..." style="flex: 1; border: none; padding: 12px; outline: none; background: transparent; color: var(--text-main);" autocomplete="off">
+                <button type="submit" style="background: #8b5cf6; color: white; border: none; padding: 0 20px; cursor: pointer;">➤</button>
+            </form>
+        </div>
+        <button id="global-chat-toggle" style="background: #8b5cf6; color: white; border: none; width: 60px; height: 60px; border-radius: 50%; font-size: 1.5rem; cursor: pointer; box-shadow: 0 4px 12px rgba(139,92,246,0.4); display: flex; align-items: center; justify-content: center;">🌍</button>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const socket = io();
+            const chatToggle = document.getElementById('global-chat-toggle');
+            const chatWindow = document.getElementById('global-chat-window');
+            const closeChat = document.getElementById('close-global-chat');
+            const chatForm = document.getElementById('global-chat-form');
+            const chatInput = document.getElementById('global-chat-input');
+            const chatMessages = document.getElementById('global-chat-messages');
+            const username = "{{ session.get('username', 'Гость') }}";
+
+            chatToggle.addEventListener('click', () => {
+                if (chatWindow.style.display === 'none' || chatWindow.style.display === '') {
+                    chatWindow.style.display = 'flex';
+                    chatToggle.style.display = 'none';
+                }
+            });
+
+            closeChat.addEventListener('click', () => {
+                chatWindow.style.display = 'none';
+                chatToggle.style.display = 'flex';
+            });
+
+            chatForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const message = chatInput.value.trim();
+                if (!message) return;
+                socket.emit('send_message', { username: username, message: message });
+                chatInput.value = '';
+            });
+
+            socket.on('receive_message', (data) => {
+                const msgDiv = document.createElement('div');
+                msgDiv.style.cssText = 'background: var(--card-bg); padding: 10px; border-radius: 10px; border: 1px solid var(--nav-border); align-self: flex-start; max-width: 80%;';
+                msgDiv.innerHTML = '<strong style="color: #8b5cf6; font-size: 0.85rem;">' + data.username + '</strong><br>' + data.message;
+                chatMessages.appendChild(msgDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            });
+        });
+    </script>
+    
 </body>
 </html>

@@ -14,6 +14,7 @@ class User(db.Model):
     password_hash = db.Column(db.String(255), nullable=False)
     role = db.Column(db.String(20), default='participant')
     accessibility_needs = db.Column(db.Text, default='')
+    avatar = db.Column(db.String(255), default='')
     is_deaf = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
@@ -44,6 +45,7 @@ class Event(db.Model):
     is_inclusive = db.Column(db.Boolean, default=False)
     sign_language = db.Column(db.Boolean, default=False)
     visual_alerts = db.Column(db.Boolean, default=False)
+    wheelchair_accessible = db.Column(db.Boolean, default=False)
     organizer_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 

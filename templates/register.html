@@ -1,83 +1,52 @@
 {% extends "base.html" %}
 
-{% block title %}Регистрация — AccessEvent{% endblock %}
-
 {% block content %}
-<div class="form-container">
-    <h1>Регистрация</h1>
+<div style="display: flex; justify-content: center; align-items: center; min-height: 70vh;">
+    <div class="card" style="width: 100%; max-width: 500px; padding: 40px;">
+        <h2 style="text-align: center; margin-bottom: 30px; font-size: 1.8rem;">Создать аккаунт</h2>
+        
+        {% if error %}
+        <div style="background-color: #fee2e2; color: #991b1b; padding: 12px; border-radius: 8px; margin-bottom: 20px; font-size: 0.9rem; text-align: center;">
+            {{ error }}
+        </div>
+        {% endif %}
 
-    {% if error %}
-    <div class="notification notification-error" role="alert">
-        {{ error }}
+        <form method="POST" action="/register">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 500;">Имя пользователя</label>
+                <input type="text" name="username" required placeholder="Иван Иванов" style="width: 100%; padding: 12px; border-radius: 8px; font-size: 1rem;">
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 500;">Email</label>
+                <input type="email" name="email" required placeholder="your@email.com" style="width: 100%; padding: 12px; border-radius: 8px; font-size: 1rem;">
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 500;">Пароль</label>
+                <input type="password" name="password" required placeholder="Минимум 8 символов" minlength="8" style="width: 100%; padding: 12px; border-radius: 8px; font-size: 1rem;">
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 500;">Роль</label>
+                <select name="role" style="width: 100%; padding: 12px; border-radius: 8px; font-size: 1rem;">
+                    <option value="participant">Участник</option>
+                    <option value="organizer">Организатор</option>
+                </select>
+            </div>
+
+            <div style="margin-bottom: 30px; display: flex; align-items: center; gap: 10px;">
+                <input type="checkbox" id="is_deaf" name="is_deaf" value="true" style="width: 18px; height: 18px; accent-color: var(--primary);">
+                <label for="is_deaf" style="font-weight: 400; cursor: pointer;">Я глухой или слабослышащий</label>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 14px; border-radius: 8px; font-size: 1.1rem;">Зарегистрироваться</button>
+        </form>
+
+        <p style="text-align: center; margin-top: 25px; color: var(--text-muted); font-size: 0.95rem;">
+            Уже есть аккаунт? <a href="/login" style="color: var(--primary); text-decoration: none; font-weight: 600;">Войти</a>
+        </p>
     </div>
-    {% endif %}
-
-    <form id="register-form" method="POST"
-          action="{{ url_for('register_page') }}"
-          aria-label="Форма регистрации">
-        <div class="form-group">
-            <label for="username">Имя пользователя:</label>
-            <input type="text" id="username" name="username"
-                   minlength="1" maxlength="50" required>
-        </div>
-
-        <div class="form-group">
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" required>
-        </div>
-
-        <div class="form-group">
-            <label for="password">Пароль:</label>
-            <input type="password" id="password" name="password"
-                   minlength="8" aria-describedby="password-hint" required>
-            <small id="password-hint">Минимум 8 символов</small>
-        </div>
-
-        <div class="form-group">
-            <label for="role">Роль:</label>
-            <select id="role" name="role">
-                <option value="participant">Участник</option>
-                <option value="organizer">Организатор</option>
-            </select>
-        </div>
-
-        <div class="form-group checkbox-group">
-            <input type="checkbox" id="is_deaf" name="is_deaf" value="true">
-            <label for="is_deaf">
-                Я глухой или слабослышащий
-            </label>
-        </div>
-
-        <div class="form-group">
-            <label for="accessibility_needs">
-                Особые потребности (необязательно):
-            </label>
-            <textarea id="accessibility_needs"
-                      name="accessibility_needs"
-                      rows="3"
-                      placeholder="Например: нужна сурдопереводная служба">
-            </textarea>
-        </div>
-
-        <button type="submit" class="btn btn-primary">
-            Зарегистрироваться
-        </button>
-    </form>
 </div>
-{% endblock %}
-
-{% block scripts %}
-<script>
-    document.getElementById('register-form').addEventListener('submit',
-        function(e) {
-            const username = document.getElementById('username');
-            const password = document.getElementById('password');
-            if (!username.value.trim() || password.value.length < 8) {
-                e.preventDefault();
-                showNotification('Проверьте имя и пароль (минимум 8 символов)',
-                                 'error');
-            }
-        }
-    );
-</script>
 {% endblock %}

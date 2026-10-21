@@ -1,30 +1,43 @@
 {% extends "base.html" %}
 
-{% block title %}AccessEvent — главная{% endblock %}
-
 {% block content %}
-<section class="hero">
-    <h1>Платформа инклюзивных мероприятий</h1>
-    <p>Находите события с сурдопереводом, визуальными оповещениями
-       и доступной средой.</p>
-    <a href="{{ url_for('events_page') }}" class="btn btn-primary"
-       aria-label="Перейти к списку мероприятий">
-       Смотреть мероприятия
-    </a>
-</section>
+<div style="max-width: 1000px; margin: 0 auto;">
+    
+    <!-- Главный баннер -->
+    <div class="card" style="padding: 60px 40px; text-align: center; border-radius: 24px; background: linear-gradient(135deg, var(--card-bg) 0%, var(--bg-color) 100%);">
+        <h1 style="font-size: 3rem; font-weight: 700; margin-bottom: 20px; letter-spacing: -1px;">
+            Мир, где удобно <span style="color: var(--primary);">каждому</span>
+        </h1>
+        <p style="font-size: 1.2rem; color: var(--text-muted); max-width: 600px; margin: 0 auto 40px auto;">
+            AccessEvent — это платформа для поиска и создания инклюзивных мероприятий. Мы учитываем потребности людей с инвалидностью, чтобы никто не остался в стороне.
+        </p>
+        <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+            <a href="/events" class="btn btn-primary" style="padding: 14px 32px; border-radius: 10px; font-size: 1.1rem; text-decoration: none;">Смотреть мероприятия</a>
+            <a href="/events/create" class="btn" style="padding: 14px 32px; border-radius: 10px; font-size: 1.1rem; text-decoration: none; background: transparent; border: 2px solid var(--nav-border); color: var(--text-main);">Создать мероприятие</a>
+        </div>
+    </div>
 
-<section class="features">
-    <div class="feature-card">
-        <h2>🔔 Уведомления</h2>
-        <p>Все уведомления визуальные — никаких звуковых сигналов.</p>
+    <!-- Блок с преимуществами -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 40px;">
+        
+        <div class="card" style="padding: 30px;">
+            <div style="font-size: 2rem; margin-bottom: 15px;">🤟</div>
+            <h3 style="margin-bottom: 10px; font-size: 1.2rem;">Сурдоперевод</h3>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">Ищите мероприятия, где есть сурдопереводчик или визуальные оповещения для глухих и слабослышащих.</p>
+        </div>
+
+        <div class="card" style="padding: 30px;">
+            <div style="font-size: 2rem; margin-bottom: 15px;">♿</div>
+            <h3 style="margin-bottom: 10px; font-size: 1.2rem;">Доступная среда</h3>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">Фильтр «Для колясочников» покажет события, где есть пандусы и широкие двери.</p>
+        </div>
+
+        <div class="card" style="padding: 30px;">
+            <div style="font-size: 2rem; margin-bottom: 15px;">🌟</div>
+            <h3 style="margin-bottom: 10px; font-size: 1.2rem;">Инклюзивность</h3>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">Организаторы могут отметить особые потребности, чтобы каждый гость чувствовал себя комфортно.</p>
+        </div>
+
     </div>
-    <div class="feature-card">
-        <h2>🤟 Сурдоперевод</h2>
-        <p>Мероприятия с жестовым переводом помечены специальным бейджем.</p>
-    </div>
-    <div class="feature-card">
-        <h2>♿ Доступность</h2>
-        <p>Каждое событие указывает, какие условия доступности предоставлены.</p>
-    </div>
-</section>
+</div>
 {% endblock %}
